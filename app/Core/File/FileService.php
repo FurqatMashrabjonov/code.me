@@ -50,20 +50,21 @@ class FileService
 
     public static function createBaseFiles($folder_path, $language_key)
     {
-        $input_file = 'input.txt';
-        $output_file = 'output.txt';
-        $main_file = 'main.txt';
-
         $language = Language::query()->where('key', $language_key)->first();
+        $files = [
+            'input' => 'txt',
+            'output' => 'txt',
+            'main' => $language->extension
+        ];
 
-//        $filehandle = fopen($filename, "w+");
-//        if ($filehandle) {
-//            fclose($filehandle);
-//            chmod($filename, 0666); // Set read and write permissions
-//            echo "File created successfully with read and write permissions.";
-//        } else {
-//            echo "Error creating file.";
-//        }
+        foreach ($files as $file_name => $extension) {
+            try {
+                echo "$folder_path/$file_name.txt";
+                File::put("$folder_path/$file_name.$extension", '');
+            } catch (FilesystemException $exception) {
+                Log::debug($exception->getMessage());
+            }
+        }
     }
 
     public static function checkFolder($path): bool
